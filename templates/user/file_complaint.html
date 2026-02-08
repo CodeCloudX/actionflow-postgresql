@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+
+{% block title %}File a Complaint{% endblock %}
+
+{% block head %}
+{{ super() }}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/user/file_complaint.css') }}">
+{% endblock %}
+
+{% block page_title %}<i class="fas fa-edit"></i> File a New Complaint{% endblock %}
+
+{% block content %}
+<div class="form-container">
+    <div class="form-title">
+        <i class="fas fa-edit"></i> Complaint Details
+    </div>
+
+    <form id="complaintForm" method="POST" enctype="multipart/form-data">
+        <div class="form-group">
+            <label class="form-label" for="category">Category *</label>
+            <select id="category" name="category" class="form-select" required>
+                <option value="">Select category</option>
+                <option value="Infrastructure">Infrastructure</option>
+                <option value="Sanitation">Sanitation</option>
+                <option value="Security">Security</option>
+                <option value="Utilities">Utilities</option>
+                <option value="Administration">Administration</option>
+                <option value="other">Other</option>
+            </select>
+        </div>
+
+        <div class="other-category-input" id="otherCategoryInput">
+            <label class="form-label" for="otherCategory">Specify Issue Type *</label>
+            <input type="text" id="otherCategory" name="other_category" class="form-input" placeholder="Please specify the issue type...">
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">Priority *</label>
+            <div class="priority-options">
+                <label class="priority-option priority-high">
+                    <input type="radio" name="priority" value="High" required>
+                    <div class="priority-dot"></div>
+                    <span>High</span>
+                </label>
+                <label class="priority-option priority-medium">
+                    <input type="radio" name="priority" value="Medium" checked>
+                    <div class="priority-dot"></div>
+                    <span>Medium</span>
+                </label>
+                <label class="priority-option priority-low">
+                    <input type="radio" name="priority" value="Low">
+                    <div class="priority-dot"></div>
+                    <span>Low</span>
+                </label>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label" for="description">Detailed Description *</label>
+            <textarea id="description" name="description" class="form-textarea" placeholder="Please provide detailed information about your complaint..." required></textarea>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label" for="complaint_image">Upload Complaint Image *</label>
+            <input type="file" id="complaint_image" name="complaint_image" class="form-control" accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp" required>
+            <div class="file-info">
+                An image is required for clarity. Allowed types: JPG, PNG, WEBP (Max: 5MB)
+            </div>
+        </div>
+
+        <div class="form-group">
+            <button type="submit" class="submit-btn">
+                <i class="fas fa-paper-plane"></i> Submit Complaint
+            </button>
+        </div>
+    </form>
+</div>
+
+<script src="{{ url_for('static', filename='js/user/file_complaint.js') }}"></script>
+{% endblock %}

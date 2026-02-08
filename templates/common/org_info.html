@@ -1,0 +1,203 @@
+{% extends "base.html" %}
+
+{% block title %}Organization Information{% endblock %}
+
+{% block head %}
+<style>
+    .org-container {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+    }
+
+    /* Adjust grid for user view where some sections are hidden */
+    {% if session['role'] == 'user' %}
+    .org-container {
+        grid-template-areas:
+            "org-info contact-info";
+    }
+    {% else %}
+    .org-container {
+        grid-template-areas:
+            "org-info contact-info"
+            "admin-info quick-stats";
+    }
+    {% endif %}
+
+    @media (max-width: 1024px) {
+        .org-container {
+            grid-template-columns: 1fr;
+            grid-template-areas:
+                "org-info"
+                "contact-info"
+                "admin-info"
+                "quick-stats";
+        }
+    }
+
+    .org-section:nth-child(1) { grid-area: org-info; }
+    .org-section:nth-child(2) { grid-area: contact-info; }
+    .org-section:nth-child(3) { grid-area: admin-info; }
+    .org-section:nth-child(4) { grid-area: quick-stats; }
+    
+    .org-section {
+        background-color: white;
+        border-radius: 6px;
+        padding: 20px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        min-height: 250px;
+    }
+    
+    .section-title {
+        font-size: 1rem;
+        color: #2c3e50;
+        margin-bottom: 15px;
+        padding-bottom: 8px;
+        border-bottom: 1px solid #eaeaea;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    .info-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+    }
+    
+    .info-item, .contact-item {
+        margin-bottom: 10px;
+    }
+    
+    .info-label, .contact-label {
+        font-size: 0.85rem;
+        color: #7f8c8d;
+        margin-bottom: 4px;
+    }
+    
+    .info-value, .contact-value {
+        font-size: 0.9rem;
+        color: #2c3e50;
+        font-weight: 500;
+    }
+    
+    .org-id-box {
+        background-color: #f8f9fa;
+        padding: 15px;
+        border-radius: 6px;
+        border-left: 4px solid #3498db;
+        margin-top: 10px;
+    }
+    
+    .org-id-value {
+        font-size: 1.1rem;
+        color: #2c3e50;
+        font-weight: 700;
+        font-family: monospace;
+    }
+    
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+        margin-top: 15px;
+    }
+    
+    .stat-box {
+        text-align: center;
+        padding: 15px;
+        background-color: #f8f9fa;
+        border-radius: 6px;
+    }
+    
+    .stat-number {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #3498db;
+    }
+</style>
+{% endblock %}
+
+{% block page_title %}<i class="fas fa-building"></i> Organization Info{% endblock %}
+
+{% block content %}
+<div class="org-container">
+    <!-- Organization Information -->
+    <div class="org-section">
+        <div class="section-title"><i class="fas fa-info-circle"></i> Organization Details</div>
+        <div class="info-grid">
+            <div class="info-item">
+                <div class="info-label">Organization Name</div>
+                <div class="info-value">{{ organization.org_name }}</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Category</div>
+                <div class="info-value">{{ organization.category }}</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Website</div>
+                <div class="info-value"><a href="{{ organization.website_url }}" target="_blank">{{ organization.website }}</a></div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Registered On</div>
+                <div class="info-value">{{ organization.created_at.strftime('%B %d, %Y') }}</div>
+            </div>
+        </div>
+        <div class="org-id-box">
+            <div class="info-label">Organization Unique ID</div>
+            <div class="org-id-value">{{ organization.org_unique_id }}</div>
+        </div>
+    </div>
+
+    <!-- Contact Information -->
+    <div class="org-section">
+        <div class="section-title"><i class="fas fa-address-card"></i> Contact Information</div>
+        <div class="info-item">
+            <div class="info-label">Contact Email</div>
+            <div class="info-value">{{ organization.contact_email }}</div>
+        </div>
+        <div class="info-item">
+            <div class="info-label">Phone Number</div>
+            <div class="info-value">{{ organization.phone }}</div>
+        </div>
+        <div class="info-item">
+            <div class="info-label">Address</div>
+            <div class="info-value">{{ organization.address }}</div>
+        </div>
+    </div>
+
+    {% if session['role'] == 'admin' %}
+    <!-- Administrator Information -->
+    <div class="org-section">
+        <div class="section-title"><i class="fas fa-user-shield"></i> Primary Administrator</div>
+        <div class="info-item">
+            <div class="info-label">Admin Name</div>
+            <div class="info-value">{{ primary_admin.full_name }}</div>
+        </div>
+        <div class="info-item">
+            <div class="info-label">Admin Email</div>
+            <div class="info-value">{{ primary_admin.email }}</div>
+        </div>
+    </div>
+
+    <!-- Quick Stats -->
+    <div class="org-section">
+        <div class="section-title"><i class="fas fa-chart-bar"></i> Quick Stats</div>
+        <div class="stats-grid">
+            <div class="stat-box">
+                <div class="stat-number">{{ user_count }}</div>
+                <div class="info-label">Total Users</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-number">{{ resolver_count }}</div>
+                <div class="info-label">Total Resolvers</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-number">{{ complaint_count }}</div>
+                <div class="info-label">Total Complaints</div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

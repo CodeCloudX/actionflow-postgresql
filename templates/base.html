@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}ActionFlow{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='vendor/fontawesome-free-6.4.0-web/css/all.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+
+    {% block head %}{% endblock %}
+</head>
+<body>
+<div class="dashboard-container">
+    <!-- LEFT SIDEBAR -->
+    <div class="sidebar">
+        <div class="logo-section">
+            <h1><i class="fas fa-tasks"></i> <span>ActionFlow</span></h1>
+        </div>
+
+        <div class="profile-section">
+            {% if session['role'] == 'admin' %}
+            <div class="profile-avatar avatar-admin"><i class="fas fa-user-shield"></i></div>
+            {% else %}
+            <div class="profile-avatar avatar-user"><i class="fas fa-user"></i></div>
+            {% endif %}
+            <h3>{{ session.full_name or 'User' }}</h3>
+            <p>{{ organization.org_name }}</p>
+        </div>
+
+        <div class="nav-menu">
+            {% if session['role'] == 'admin' %}
+            <!-- Admin Navigation -->
+            <a href="{{ url_for('admin.dashboard') }}" class="nav-item {% if 'dashboard' in request.endpoint %}active{% endif %}">
+                <i class="fas fa-tachometer-alt"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="{{ url_for('admin.complaints') }}" class="nav-item {% if 'complaints' in request.endpoint %}active{% endif %}">
+                <i class="fas fa-ticket-alt"></i>
+                <span>Complaints</span>
+            </a>
+            <a href="{{ url_for('admin.list_users') }}" class="nav-item {% if 'list_users' in request.endpoint %}active{% endif %}">
+                <i class="fas fa-users"></i>
+                <span>Users</span>
+            </a>
+            <a href="{{ url_for('admin.manage_resolvers') }}" class="nav-item {% if 'list_resolvers' in request.endpoint %}active{% endif %}">
+                <i class="fas fa-user-check"></i>
+                <span>Resolvers</span>
+            </a>
+            <a href="{{ url_for('admin.organization_info') }}" class="nav-item {% if 'organization_info' in request.endpoint %}active{% endif %}">
+                <i class="fas fa-building"></i>
+                <span>Organization Info</span>
+            </a>
+            {% else %}
+            <!-- User Navigation -->
+            <a href="{{ url_for('user.dashboard') }}" class="nav-item {% if 'dashboard' in request.endpoint %}active{% endif %}">
+                <i class="fas fa-tachometer-alt"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="{{ url_for('user.file_complaint') }}" class="nav-item {% if 'file_complaint' in request.endpoint %}active{% endif %}">
+                <i class="fas fa-edit"></i>
+                <span>File Complaint</span>
+            </a>
+            <a href="{{ url_for('user.my_complaints') }}" class="nav-item {% if 'my_complaints' in request.endpoint %}active{% endif %}">
+                <i class="fas fa-list"></i>
+                <span>My Complaints</span>
+            </a>
+            <a href="{{ url_for('user.organization_info') }}" class="nav-item {% if 'organization_info' in request.endpoint %}active{% endif %}">
+                <i class="fas fa-building"></i>
+                <span>Organization Info</span>
+            </a>
+            <a href="{{ url_for('user.profile') }}" class="nav-item {% if 'profile' in request.endpoint %}active{% endif %}">
+                <i class="fas fa-user"></i>
+                <span>My Profile</span>
+            </a>
+            {% endif %}
+        </div>
+
+        <div class="logout-section">
+            <a href="{{ url_for('auth.logout') }}" class="logout-btn">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Logout</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div class="main-content">
+        <header class="top-header">
+            <div class="menu-btn">
+                <i class="fas fa-bars"></i>
+            </div>
+            <h2 class="page-title">{% block page_title %}{% endblock %}</h2>
+        </header>
+        
+        <main class="content-area">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    <div class="flash-container">
+                    {% for category, message in messages %}
+                        <div class="flash-message flash-{{ category }}">
+                            {{ message }}
+                            <span class="close-flash" onclick="this.parentElement.style.display='none';">&times;</span>
+                        </div>
+                    {% endfor %}
+                    </div>
+                {% endif %}
+            {% endwith %}
+            {% block content %}{% endblock %}
+        </main>
+    </div>
+</div>
+<script src="{{ url_for('static', filename='js/base.js') }}"></script>
+</body>
+</html>

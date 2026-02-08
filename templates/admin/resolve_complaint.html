@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block title %}Resolve Complaint{% endblock %}
+
+{% block head %}
+{{ super() }}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/admin/resolve_complaint.css') }}">
+{% endblock %}
+
+{% block page_title %}<i class="fas fa-check-circle"></i> Resolve Complaint{% endblock %}
+
+{% block content %}
+<div class="resolve-container">
+    <div class="resolve-card">
+        <div class="section-title">Resolving Complaint: {{ complaint.complaint_id }}</div>
+
+        <!-- Complaint Details Section -->
+        <div class="complaint-details-grid">
+            <div class="detail-item">
+                <span class="label">Complainant:</span> {{ complaint.user.full_name if complaint.user else 'Unknown User' }}
+            </div>
+            <div class="detail-item">
+                <span class="label">Category:</span> {{ complaint.category }}
+            </div>
+            <div class="detail-item">
+                <span class="label">Priority:</span> {{ complaint.priority }}
+            </div>
+            <div class="detail-item">
+                <span class="label">Status:</span> {{ complaint.status|replace('_', ' ')|title }}
+            </div>
+            <div class="detail-item" style="grid-column: 1 / -1;">
+                <span class="label">Description:</span>
+                <p>{{ complaint.description }}</p>
+            </div>
+            {% if complaint.complaint_image %}
+            <div class="detail-item" style="grid-column: 1 / -1;">
+                <span class="label">Complaint Image:</span><br>
+                <img src="{{ url_for('static', filename='uploads/' + complaint.complaint_image) }}"
+                     alt="Complaint Image" style="max-width: 100%; max-height: 300px; border-radius: 4px; margin-top: 10px;">
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Resolution Form -->
+        <form method="POST" enctype="multipart/form-data">
+            <div class="form-group">
+                <label for="resolution_note" class="form-label">Resolution Note *</label>
+                <textarea id="resolution_note" name="resolution_note" class="form-control" rows="4" required placeholder="Describe the steps taken to resolve the issue..."></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="proof_image" class="form-label">Upload Proof Image *</label>
+                <input type="file" id="proof_image" name="proof_image" class="form-control"
+                       accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp" required>
+                <div class="file-info">
+                    A proof image is required for accountability. Allowed types: JPG, JPEG, PNG, WEBP (Max: 5MB)
+                </div>
+            </div>
+
+            <button type="submit" class="btn-submit">Mark as Resolved</button>
+            <a href="{{ url_for('admin.complaints') }}" style="margin-left: 1rem; color: #6c757d; text-decoration: none;">Cancel</a>
+        </form>
+    </div>
+</div>
+{% endblock %}
