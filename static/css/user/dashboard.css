@@ -93,7 +93,7 @@
 
 .activity-item {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     gap: 1rem;
     padding: 1rem 0;
     border-bottom: 1px solid #e1e8ed;
@@ -120,10 +120,11 @@
 
 .activity-content {
     display: flex;
+    flex-wrap: wrap;
     justify-content: space-between;
     align-items: center;
     flex-grow: 1;
-    gap: 1rem;
+    gap: 0.5rem 1rem;
 }
 
 .activity-content p {
@@ -133,6 +134,7 @@
 
 .activity-description {
     color: #2c3e50;
+    flex-basis: 100%;
 }
 
 .activity-description strong {
@@ -192,16 +194,19 @@
 
     .activity-item {
         padding: 0.75rem 0;
-        flex-wrap: wrap;
     }
 
     .activity-content {
-        flex-wrap: wrap;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.25rem;
+    }
+
+    .activity-description {
+        flex-basis: auto;
     }
 
     .activity-time {
-        width: 100%;
-        text-align: right;
-        margin-top: 5px;
+        font-size: 0.8rem;
     }
 }

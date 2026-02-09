@@ -14,13 +14,6 @@ pip-log.txt
 
 # Environment variables
 .env
-<<<<<<< HEAD
-=======
-
-actionflow.db
-instance/
-migrations/versions/
->>>>>>> 0052f5f3635394baf1d2dee158c41a9c2e32a8b2
 *.env
 
 # Uploads folder
