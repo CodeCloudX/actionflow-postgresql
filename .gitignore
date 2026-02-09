@@ -1,0 +1,24 @@
+# Python standard
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+pip-log.txt
+
+# IDE configuration
+.idea/
+.vscode/
+
+# Environment variables
+.env
+*.env
+
+# Uploads folder
+static/uploads/
+
+# Other
+.coverage
+*.log

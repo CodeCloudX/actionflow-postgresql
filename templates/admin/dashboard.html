@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard{% endblock %}
+
+{% block head %}
+{{ super() }}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/admin/dashboard.css') }}">
+{% endblock %}
+
+{% block page_title %}<i class="fas fa-tachometer-alt"></i> Dashboard{% endblock %}
+
+{% block content %}
+<div class="content-area">
+    <div class="welcome-banner">
+        <h3>Welcome back, {{ session.full_name.split(' ')[0] or 'Admin' }}!</h3>
+        <p>Here's an overview of the platform's complaints and activities.</p>
+    </div>
+
+    <div class="stats-grid">
+        <a href="{{ url_for('admin.complaints') }}" class="stat-card">
+            <div class="stat-icon icon-total">
+                <i class="fas fa-file-alt"></i>
+            </div>
+            <div class="stat-content">
+                <div class="stat-number">{{ total_complaints }}</div>
+                <div class="stat-label">Total Complaints</div>
+            </div>
+        </a>
+
+        <a href="{{ url_for('admin.complaints', status='pending') }}" class="stat-card">
+            <div class="stat-icon icon-pending">
+                <i class="fas fa-clock"></i>
+            </div>
+            <div class="stat-content">
+                <div class="stat-number">{{ pending_complaints }}</div>
+                <div class="stat-label">Pending</div>
+            </div>
+        </a>
+
+        <a href="{{ url_for('admin.complaints', priority='high', status='pending,in_progress') }}" class="stat-card">
+            <div class="stat-icon icon-high">
+                <i class="fas fa-exclamation-triangle"></i>
+            </div>
+            <div class="stat-content">
+                <div class="stat-number">{{ high_priority_complaints }}</div>
+                <div class="stat-label">High Priority</div>
+            </div>
+        </a>
+
+        <a href="{{ url_for('admin.complaints', status='in_progress') }}" class="stat-card">
+            <div class="stat-icon icon-in-progress">
+                <i class="fas fa-sync-alt"></i>
+            </div>
+            <div class="stat-content">
+                <div class="stat-number">{{ inprogress_complaints }}</div>
+                <div class="stat-label">Ready to Resolve</div>
+            </div>
+        </a>
+
+        <a href="{{ url_for('admin.complaints', status='resolved,closed') }}" class="stat-card">
+            <div class="stat-icon icon-resolved">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <div class="stat-content">
+                <div class="stat-number">{{ resolved_complaints }}</div>
+                <div class="stat-label">Resolved</div>
+            </div>
+        </a>
+    </div>
+
+    <div class="activity-feed">
+        <div class="activity-header">
+            <i class="fas fa-history"></i>
+            <span>Recent Activity</span>
+        </div>
+
+        {% set activities = (recent_users + recent_complaints) | sort(attribute='created_at', reverse=true) %}
+
+        {% if activities %}
+        {% for item in activities[:4] %}
+        <div class="activity-item">
+            <div class="activity-icon
+                        {% if item.__class__.__name__ == 'User' %}icon-user-plus
+                        {% elif item.__class__.__name__ == 'Complaint' and item.priority == 'high' and item.resolver_id %}icon-auto-assign
+                        {% elif item.__class__.__name__ == 'Complaint' %}icon-complaint
+                        {% endif %}">
+                <i class="fas
+                        {% if item.__class__.__name__ == 'User' %}fa-user-plus
+                        {% elif item.__class__.__name__ == 'Complaint' and item.priority == 'high' and item.resolver_id %}fa-robot
+                        {% elif item.__class__.__name__ == 'Complaint' %}fa-exclamation-triangle
+                        {% endif %}"></i>
+            </div>
+            <div class="activity-content">
+                {% if item.__class__.__name__ == 'User' %}
+                <p><strong>{{ item.full_name }}</strong> registered as a new user.</p>
+                {% elif item.__class__.__name__ == 'Complaint' and item.priority == 'high' and item.resolver_id %}
+                <p>High-priority complaint (<strong>{{ item.complaint_id }}</strong>) was auto-assigned to <strong>{{ item.resolver.name }}</strong>.</p>
+                {% elif item.__class__.__name__ == 'Complaint' %}
+                <p>New complaint (<strong>{{ item.complaint_id }}</strong>) submitted by <strong>{{ item.user.full_name }}</strong>.</p>
+                {% endif %}
+                <p class="activity-time">{{ item.created_at.strftime('%B %d, %Y at %I:%M %p') }}</p>
+            </div>
+        </div>
+        {% endfor %}
+        {% else %}
+        <div class="no-activity">
+            <p>No recent activity to display.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

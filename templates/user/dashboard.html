@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+
+{% block title %}User Dashboard{% endblock %}
+
+{% block head %}
+{{ super() }}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/user/dashboard.css') }}">
+{% endblock %}
+
+{% block page_title %}<i class="fas fa-tachometer-alt"></i> Dashboard{% endblock %}
+
+{% block content %}
+<div class="welcome-banner">
+    <h3>Welcome back, {{ (session.full_name.split(' ')[0] or 'User')|e }}!</h3>
+    <p>Here's an overview of your complaints and activities.</p>
+</div>
+
+<div class="stats-grid">
+    <a href="{{ url_for('user.my_complaints') }}" class="stat-card">
+        <div class="stat-icon icon-total">
+            <i class="fas fa-list-alt"></i>
+        </div>
+        <div class="stat-content">
+            <div class="stat-number">{{ total_complaints }}</div>
+            <div class="stat-label">Total Complaints</div>
+        </div>
+    </a>
+    <a href="{{ url_for('user.my_complaints', status='pending') }}" class="stat-card">
+        <div class="stat-icon icon-pending">
+            <i class="fas fa-clock"></i>
+        </div>
+        <div class="stat-content">
+            <div class="stat-number">{{ pending_complaints }}</div>
+            <div class="stat-label">Pending</div>
+        </div>
+    </a>
+    <a href="{{ url_for('user.my_complaints', status='in_progress') }}" class="stat-card">
+        <div class="stat-icon icon-in-progress">
+            <i class="fas fa-sync-alt"></i>
+        </div>
+        <div class="stat-content">
+            <div class="stat-number">{{ inprogress_complaints }}</div>
+            <div class="stat-label">In Progress</div>
+        </div>
+    </a>
+    <a href="{{ url_for('user.my_complaints', status='resolved') }}" class="stat-card">
+        <div class="stat-icon icon-resolved">
+            <i class="fas fa-exclamation-circle"></i>
+        </div>
+        <div class="stat-content">
+            <div class="stat-number">{{ resolved_complaints }}</div>
+            <div class="stat-label">Action Required</div>
+        </div>
+    </a>
+    <a href="{{ url_for('user.my_complaints', status='closed') }}" class="stat-card">
+        <div class="stat-icon icon-completed">
+            <i class="fas fa-check-circle"></i>
+        </div>
+        <div class="stat-content">
+            <div class="stat-number">{{ closed_complaints }}</div>
+            <div class="stat-label">Closed</div>
+        </div>
+    </a>
+</div>
+
+<!-- Recent Activity -->
+<div class="activity-feed">
+    <div class="activity-header">
+        <i class="fas fa-history"></i>
+        <span>Recent Activity</span>
+    </div>
+
+    {% if recent_complaints %}
+    {% for complaint in recent_complaints %}
+    <div class="activity-item">
+        <div class="activity-icon
+            {% if complaint.status == 'pending' %}icon-pending
+            {% elif complaint.status == 'in_progress' %}icon-in-progress
+            {% elif complaint.status == 'resolved' %}icon-resolved
+            {% elif complaint.status == 'closed' %}icon-completed
+            {% endif %}">
+            <i class="fas
+                {% if complaint.status == 'pending' %}fa-clock
+                {% elif complaint.status == 'in_progress' %}fa-sync-alt
+                {% elif complaint.status == 'resolved' %}fa-exclamation-circle
+                {% elif complaint.status == 'closed' %}fa-check-circle
+                {% else %}fa-file-alt
+                {% endif %}"></i>
+        </div>
+        <div class="activity-content">
+            <p class="activity-description">
+                {% if complaint.status == 'pending' %}
+                You submitted a new complaint: <strong>{{ complaint.complaint_id }}</strong>
+                {% elif complaint.status == 'in_progress' %}
+                Your complaint <strong>{{ complaint.complaint_id }}</strong> is being worked on{% if complaint.resolver %} by <strong>{{ complaint.resolver.name }}</strong>{% endif %}.
+                {% elif complaint.status == 'resolved' %}
+                Your complaint <strong>{{ complaint.complaint_id }}</strong> has been resolved. <strong>Action required:</strong> Please provide feedback and close the complaint.
+                {% elif complaint.status == 'closed' %}
+                You closed complaint: <strong>{{ complaint.complaint_id }}</strong>
+                {% endif %}
+            </p>
+            <p class="activity-time">
+                {% set complaint_time = complaint.updated_at or complaint.created_at %}
+                {% if complaint_time %}
+                {{ complaint_time.strftime('%b %d, %Y at %I:%M %p') }}
+                {% endif %}
+            </p>
+        </div>
+    </div>
+    {% endfor %}
+    {% else %}
+    <div class="no-activity">
+        <p>No recent activity to display.</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

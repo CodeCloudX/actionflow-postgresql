@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block title %}My Profile{% endblock %}
+
+{% block head %}
+{{ super() }}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/user/profile.css') }}">
+{% endblock %}
+
+{% block page_title %}<i class="fas fa-user"></i> My Profile{% endblock %}
+
+{% block content %}
+<div class="profile-card">
+    <div class="profile-header">
+        <div class="profile-avatar-large">
+            {{ user.full_name[0]|upper }}
+        </div>
+        <div class="profile-name">
+            <h3>{{ user.full_name }}</h3>
+            <p>{{ user.email }}</p>
+        </div>
+    </div>
+
+    <div class="profile-details">
+        <div class="detail-item">
+            <div class="detail-label">Full Name</div>
+            <div class="detail-value">{{ user.full_name }}</div>
+        </div>
+        <div class="detail-item">
+            <div class="detail-label">Email Address</div>
+            <div class="detail-value">{{ user.email }}</div>
+        </div>
+        <div class="detail-item">
+            <div class="detail-label">Status</div>
+            <div class="detail-value">{{ user.status|capitalize }}</div>
+        </div>
+        <div class="detail-item">
+            <div class="detail-label">Member Since</div>
+            <div class="detail-value">{{ user.created_at.strftime('%B %d, %Y') }}</div>
+        </div>
+    </div>
+</div>
+{% endblock %}

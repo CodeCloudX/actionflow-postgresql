@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+
+{% block title %}Manage Users{% endblock %}
+
+{% block head %}
+{{ super() }}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/admin/users.css') }}">
+{% endblock %}
+
+{% block page_title %}<i class="fas fa-users"></i> Users Management{% endblock %}
+
+{% block content %}
+<div class="users-container">
+    <div class="section-title">
+        <span>All Users in Your Organization</span>
+    </div>
+
+    <div class="table-container">
+        <table class="users-table">
+            <thead>
+            <tr>
+                <th>User</th>
+                <th>Email</th>
+                <th>Status</th>
+                <th>Joined Date</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for user in users %}
+            <tr>
+                <td data-label="User">
+                    <div class="user-info">
+                        <div class="user-avatar">{{ user.full_name[:2].upper() }}</div>
+                        <div>
+                            <div class="user-name">{{ user.full_name }}</div>
+                            <div class="user-email">{{ user.email }}</div>
+                        </div>
+                    </div>
+                </td>
+                <td data-label="Email">{{ user.email }}</td>
+                <td data-label="Status">
+                        <span class="status-badge status-{{ user.status.lower() }}">
+                            {{ user.status|capitalize }}
+                        </span>
+                </td>
+                <td data-label="Joined Date">{{ user.created_at.strftime('%Y-%m-%d') }}</td>
+                <td data-label="Actions">
+                    <div class="action-buttons">
+                        <form action="{{ url_for('admin.toggle_user_status', user_id=user.id) }}" method="POST" style="display: inline;">
+                            {% if user.status == 'active' %}
+                            <button type="submit" class="action-btn deactivate-btn" onclick="return confirm('Deactivate user {{ user.full_name }}?');">
+                                Deactivate
+                            </button>
+                            {% else %}
+                            <button type="submit" class="action-btn activate-btn" onclick="return confirm('Activate user {{ user.full_name }}?');">
+                                Activate
+                            </button>
+                            {% endif %}
+                        </form>
+                    </div>
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="5" class="no-users">
+                    <i class="fas fa-users-slash"></i>
+                    <p>No users found in your organization.</p>
+                </td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

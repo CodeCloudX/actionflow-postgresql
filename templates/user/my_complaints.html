@@ -1,0 +1,163 @@
+{% extends "base.html" %}
+
+{% block title %}My Complaints{% endblock %}
+
+{% block head %}
+{{ super() }}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/user/my_complaints.css') }}">
+{% endblock %}
+
+{% block page_title %}<i class="fas fa-list"></i> My Complaints{% endblock %}
+
+{% block content %}
+<div class="complaints-container">
+    <div class="section-title">
+        <span>All Your Submitted Complaints</span>
+    </div>
+
+    <!-- Filter and Action Bar -->
+    <div class="filter-action-bar">
+        <!-- Left side: Filter dropdown -->
+        <div class="filter-section">
+            <span class="filter-label">Filter by Status:</span>
+            <select class="status-filter" onchange="window.location.href=this.value">
+                <option value="{{ url_for('user.my_complaints') }}" {% if not request.args.get('status') %}selected{% endif %}>
+                All Complaints
+                </option>
+                <option value="{{ url_for('user.my_complaints', status='pending') }}" {% if request.args.get('status') == 'pending' %}selected{% endif %}>
+                Pending
+                </option>
+                <option value="{{ url_for('user.my_complaints', status='in_progress') }}" {% if request.args.get('status') == 'in_progress' %}selected{% endif %}>
+                In Progress
+                </option>
+                <option value="{{ url_for('user.my_complaints', status='resolved') }}" {% if request.args.get('status') == 'resolved' %}selected{% endif %}>
+                Resolved
+                </option>
+                <option value="{{ url_for('user.my_complaints', status='closed') }}" {% if request.args.get('status') == 'closed' %}selected{% endif %}>
+                Closed
+                </option>
+            </select>
+        </div>
+
+        <!-- Right side: New Complaint button -->
+        <a href="{{ url_for('user.file_complaint') }}" class="btn-new-complaint">
+            <i class="fas fa-plus"></i> File a New Complaint
+        </a>
+    </div>
+
+    <!-- Complaints Table -->
+    <div class="table-container">
+        {% if complaints %}
+        <table class="complaints-table">
+            <thead>
+            <tr>
+                <th>Complaint ID</th>
+                <th>Category</th>
+                <th>Priority</th>
+                <th>Date Filed</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for complaint in complaints %}
+            <tr>
+                <td data-label="Complaint ID">{{ complaint.complaint_id }}</td>
+                <td data-label="Category">{{ complaint.category }}</td>
+                <td data-label="Priority"><span class="priority-tag priority-{{ complaint.priority.lower() }}">{{ complaint.priority }}</span></td>
+                <td data-label="Date Filed">{{ complaint.created_at.strftime('%Y-%m-%d') }}</td>
+                <td data-label="Status">
+                    {% set status_class = complaint.status.lower().replace('_', '') %}
+                    <span class="status-badge status-{{ status_class }}">
+                        {{ complaint.status|replace('_', ' ')|title }}
+                    </span>
+                </td>
+                <td data-label="Actions">
+                    <div class="action-buttons">
+                        <button class="action-btn view-btn" data-complaint-id="{{ complaint.id }}">
+                            View Details
+                        </button>
+                        {% if complaint.status|lower == 'resolved' and not complaint.rating %}
+                        <button class="action-btn feedback-btn" data-complaint-id="{{ complaint.id }}">
+                            Provide Feedback
+                        </button>
+                        {% endif %}
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div class="no-complaints">
+            <i class="fas fa-inbox" style="font-size: 3rem; margin-bottom: 1rem; color: #bdc3c7;"></i>
+            <h3>No complaints found</h3>
+            <p>{% if request.args.get('status') %}No {{ request.args.get('status')|lower }} complaints found.{% else %}You have not filed any complaints yet.{% endif %}</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Complaint Details Modal -->
+<div class="modal" id="complaintModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 id="modalTitle">Complaint Details</h3>
+            <button class="modal-close" id="closeModal">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="loading-overlay" id="loadingOverlay">
+                <div class="spinner"></div>
+            </div>
+            <div id="complaintDetails"></div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-feedback" id="feedbackBtn" style="display: none;">Provide Feedback</button>
+            <button class="btn-close" id="closeBtn">Close</button>
+        </div>
+    </div>
+</div>
+
+<!-- Feedback Modal -->
+<div class="modal" id="feedbackModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 id="feedbackModalTitle">Provide Feedback</h3>
+            <button class="modal-close" id="closeFeedbackModal">&times;</button>
+        </div>
+        <form id="feedbackForm">
+            <div class="modal-body">
+                <div id="feedbackComplaintInfo"></div>
+
+                <div class="form-group">
+                    <label class="form-label">Rate the Resolution</label>
+                    <div class="rating-stars" id="ratingStars">
+                        <span class="rating-star" data-value="1">☆</span>
+                        <span class="rating-star" data-value="2">☆</span>
+                        <span class="rating-star" data-value="3">☆</span>
+                        <span class="rating-star" data-value="4">☆</span>
+                        <span class="rating-star" data-value="5">☆</span>
+                    </div>
+                    <div class="rating-labels">
+                        <span>Poor</span>
+                        <span>Excellent</span>
+                    </div>
+                    <input type="hidden" id="ratingValue" name="rating" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="feedbackComments" class="form-label">Comments (Optional)</label>
+                    <textarea id="feedbackComments" name="comments" class="form-control"
+                              placeholder="Share your experience with the resolution process..."></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-close" id="cancelFeedbackBtn">Cancel</button>
+                <button type="submit" class="btn-submit" id="submitFeedbackBtn">Submit Feedback</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script src="{{ url_for('static', filename='js/user/my_complaints.js') }}"></script>
+{% endblock %}
