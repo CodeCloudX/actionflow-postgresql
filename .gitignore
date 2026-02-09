@@ -22,3 +22,6 @@ static/uploads/
 # Other
 .coverage
 *.log
+actionflow.db
+instance/
+migrations/versions/
