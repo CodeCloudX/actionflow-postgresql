@@ -70,7 +70,6 @@ class User(db.Model):
     password_hash = db.Column(db.String(255), nullable=False)
     status = db.Column(db.String(20), default='active')  # active / blocked
     created_at = db.Column(db.DateTime, default=datetime.now)
-    # Fields for password reset
     reset_token = db.Column(db.String(100), unique=True, nullable=True)
     reset_token_expiration = db.Column(db.DateTime, nullable=True)
 
