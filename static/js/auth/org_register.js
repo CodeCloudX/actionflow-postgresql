@@ -52,18 +52,31 @@ document.addEventListener('DOMContentLoaded', function() {
                     errorElement.classList.add('show');
                     element.classList.add('error-field');
                     isValid = false;
+<<<<<<< HEAD
                 } else if (field.id === 'contactEmail' && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(element.value.trim())) {
+=======
+                } else if (field.id === 'contactEmail' && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(element.value)) {
+>>>>>>> 0052f5f3635394baf1d2dee158c41a9c2e32a8b2
                     errorElement.textContent = 'Please enter a valid email address.';
                     errorElement.classList.add('show');
                     element.classList.add('error-field');
                     isValid = false;
+<<<<<<< HEAD
                 } else if (field.id === 'adminEmail' && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(element.value.trim())) {
+=======
+                } else if (field.id === 'adminEmail' && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(element.value)) {
+>>>>>>> 0052f5f3635394baf1d2dee158c41a9c2e32a8b2
                     errorElement.textContent = 'Please enter a valid email address.';
                     errorElement.classList.add('show');
                     element.classList.add('error-field');
                     isValid = false;
+<<<<<<< HEAD
                 } else if (field.id === 'phone' && !/^(\+91[\-\s]?)?([6-9]\d{9}|0\d{9,10})$/.test(element.value.trim())) {
                     errorElement.textContent = 'Please enter a valid contact number (mobile or landline)';
+=======
+                } else if (field.id === 'phone' && !/^[6-9]\d{9}$/.test(element.value.trim())) {
+                    errorElement.textContent = 'Phone number must be a valid 10-digit mobile number.';
+>>>>>>> 0052f5f3635394baf1d2dee158c41a9c2e32a8b2
                     errorElement.classList.add('show');
                     element.classList.add('error-field');
                     isValid = false;
@@ -77,7 +90,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 { id: 'orgName', message: 'Organization Name is required' },
                 { id: 'orgCategory', message: 'Organization Category is required' },
                 { id: 'contactEmail', message: 'Contact Email is required' },
+<<<<<<< HEAD
                 { id: 'phone', message: 'Contact Number is required' },
+=======
+                { id: 'phone', message: 'Phone is required' },
+>>>>>>> 0052f5f3635394baf1d2dee158c41a9c2e32a8b2
                 { id: 'address', message: 'Address is required' }
             ]);
         }
