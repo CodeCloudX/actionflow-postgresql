@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import datetime
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
 
@@ -19,7 +19,7 @@ class Organization(db.Model):
     phone = db.Column(db.String(20))
     address = db.Column(db.Text)
     status = db.Column(db.String(20), default='active')  # active / inactive
-    created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
+    created_at = db.Column(db.DateTime, default=datetime.now)
 
     admins = db.relationship('Admin', backref='organization', lazy=True)
     users = db.relationship('User', backref='organization', lazy=True)
@@ -45,7 +45,7 @@ class Admin(db.Model):
     full_name = db.Column(db.String(120), nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password_hash = db.Column(db.String(255), nullable=False)
-    created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
+    created_at = db.Column(db.DateTime, default=datetime.now)
     # Fields for password reset
     reset_token = db.Column(db.String(100), unique=True, nullable=True)
     reset_token_expiration = db.Column(db.DateTime, nullable=True)
@@ -69,7 +69,7 @@ class User(db.Model):
     email = db.Column(db.String(120), unique=True, nullable=False)
     password_hash = db.Column(db.String(255), nullable=False)
     status = db.Column(db.String(20), default='active')  # active / blocked
-    created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
+    created_at = db.Column(db.DateTime, default=datetime.now)
     # Fields for password reset
     reset_token = db.Column(db.String(100), unique=True, nullable=True)
     reset_token_expiration = db.Column(db.DateTime, nullable=True)
@@ -96,7 +96,7 @@ class Resolver(db.Model):
     category = db.Column(db.String(50))  # Infrastructure, Security, etc
     status = db.Column(db.String(20), default='active')  # active / blocked
     rating = db.Column(db.Float, nullable=True)
-    created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
+    created_at = db.Column(db.DateTime, default=datetime.now)
 
     complaints = db.relationship('Complaint', backref='resolver', lazy=True)
 
@@ -127,5 +127,5 @@ class Complaint(db.Model):
     feedback = db.Column(db.Text)
     rating = db.Column(db.Integer)  # 1 to 5
 
-    created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
-    updated_at = db.Column(db.DateTime, onupdate=lambda: datetime.now(timezone.utc))
+    created_at = db.Column(db.DateTime, default=datetime.now)
+    updated_at = db.Column(db.DateTime, onupdate=datetime.now)
