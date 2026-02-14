@@ -51,11 +51,10 @@ def complaints():
     query = Complaint.query.filter_by(org_id=org_id)
 
     if status_filter:
-        status = status_filter.strip().lower()
-        if status == 'resolved':
-            query = query.filter(Complaint.status.in_(['resolved', 'closed']))
-        else:
-            query = query.filter(Complaint.status == status)
+        status_list = [s.strip().lower() for s in status_filter.split(',')]
+        if 'resolved' in status_list and 'closed' not in status_list:
+            status_list.append('closed')
+        query = query.filter(Complaint.status.in_(status_list))
 
     if priority_filter:
         priority_filter = priority_filter.strip().lower()
