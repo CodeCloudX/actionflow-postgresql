@@ -7,7 +7,7 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='css/admin/dashboard.css') }}">
 {% endblock %}
 
-{% block page_title %}<i class="fas fa-tachometer-alt"></i> Dashboard{% endblock %}
+{% block page_title %}<i class="fas fa-tachometer-alt"></i> Admin Dashboard{% endblock %}
 
 {% block content %}
 <div class="content-area">
@@ -92,7 +92,7 @@
             </div>
             <div class="activity-content">
                 {% if item.__class__.__name__ == 'User' %}
-                <p><strong>{{ item.full_name }}</strong> registered as a new user.</p>
+                <p><strong>{{ item.full_name }}</strong> joined the organization.</p>
                 {% elif item.__class__.__name__ == 'Complaint' and item.priority == 'high' and item.resolver_id %}
                 <p>High-priority complaint (<strong>{{ item.complaint_id }}</strong>) was auto-assigned to <strong>{{ item.resolver.name }}</strong>.</p>
                 {% elif item.__class__.__name__ == 'Complaint' %}
